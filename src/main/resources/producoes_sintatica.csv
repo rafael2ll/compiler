@@ -1,0 +1,43 @@
+P,Producoes
+1,S->A
+2,A -> program id B
+3,B -> start C end
+4,C -> D E
+5,D -> F id J D
+6,E -> G E
+7,E -> H E
+8,E -> I E
+9,E -> N E
+10,E -> _
+11,F -> type:int
+12,F -> type:float
+13,F -> type:string
+14,G -> if lp K rp then B L
+15,H -> while lp K rp B
+16,I -> do B while lp K rp
+17,J -> comma id J
+18,K -> U M
+19,L -> else B
+20,L -> _
+21,M -> equal U
+22,M -> not_equal U
+23,M -> bigger U
+24,M -> bigger_or_equal U
+25,M -> lesser U
+26,M -> lesser_or_equal U
+27,M -> _
+28,N -> id attr O
+29,O -> P Q
+30,P -> S T
+31,Q -> op:add P Q
+32,Q -> op:sub P Q
+33,Q -> _
+34,S -> lp O rp
+35,S -> id
+36,T -> op:mult S T
+37,T -> op:div S T
+38,T -> _
+39,U -> lp K rp
+40,U -> id
+41,J -> _
+42,D -> _

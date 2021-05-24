@@ -22,9 +22,11 @@
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/lexical/impl/TableLexicalRecognizer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/lexical/impl/TableLexicalRecognizer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/syntatic/SyntaxRecognizer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/syntatic/SyntaxRecognizer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/syntatic/impl/TableSyntaxRecognizer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/syntatic/impl/TableSyntaxRecognizer.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/syntatic/model/Symbol.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/syntatic/model/Symbol.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/syntatic/model/Table.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/syntatic/model/Table.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/utils/TreeNode.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/utils/TreeNode.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/grammar.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/grammar.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -117,7 +119,7 @@
       <option name="presentableId" value="Default" />
       <updated>1620689250633</updated>
       <workItem from="1620689251874" duration="705000" />
-      <workItem from="1621808529043" duration="14224000" />
+      <workItem from="1621808529043" duration="14545000" />
     </task>
     <servers />
   </component>
