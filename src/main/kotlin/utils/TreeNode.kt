@@ -11,10 +11,23 @@ class TreeNode<T>(var value: T) {
     }
 
     override fun toString(): String {
-        var s = "$value"
-        if (!children.isEmpty()) {
-            s += " {" + children.map { it.toString() } + " }"
+        val buffer = StringBuilder(50)
+        print(buffer, "", "")
+        return buffer.toString()
+    }
+
+    private fun print(buffer: StringBuilder, prefix: String, childrenPrefix: String) {
+        buffer.append(prefix)
+        buffer.append(value)
+        buffer.append('\n')
+        val it: Iterator<TreeNode<*>> = children.iterator()
+        while (it.hasNext()) {
+            val next = it.next()
+            if (it.hasNext()) {
+                next.print(buffer, "$childrenPrefix├── ", "$childrenPrefix│   ")
+            } else {
+                next.print(buffer, "$childrenPrefix└── ", "$childrenPrefix    ")
+            }
         }
-        return s
     }
 }

@@ -1,3 +1,3 @@
 package syntatic.model
 
-data class Symbol(val value: String, val isTerminal: Boolean)
+data class Symbol(val head: String?, val value: String, val isTerminal: Boolean, val empty: Boolean)

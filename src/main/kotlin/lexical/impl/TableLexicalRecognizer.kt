@@ -6,18 +6,27 @@ import lexical.model.State
 import lexical.model.StateTable
 import lexical.model.Token
 import utils.CsvLoader
+import utils.getLogger
 import kotlin.system.exitProcess
 
 
-class TableLexicalRecognizer(private val symbolTable: SymbolTable, private val code: String) : LexicalRecognizer {
+class TableLexicalRecognizer(
+    private val tablePath: String,
+    private val symbolTable: SymbolTable,
+    private var code: String
+) : LexicalRecognizer {
+    private val logger = getLogger(javaClass)
+
     private var pos: Int = 0
     private var currentLine: Int = 0
     private var currentColumn: Int = 0
     private val stateTable: StateTable = StateTable()
 
     init {
-        val rows = loadTable("/grammar.csv") as ArrayList<ArrayList<String>>
+        code += ';'
+        val rows = loadTable(tablePath) as ArrayList<ArrayList<String>>
         val symbols = rows.removeAt(0).drop(6)
+        logger.debug("Lexical Symbols: $symbols")
         rows.forEach { stateInfo ->
             val state = State(
                 stateInfo[0].toInt(),
@@ -27,8 +36,11 @@ class TableLexicalRecognizer(private val symbolTable: SymbolTable, private val c
                 stateInfo[4].toBoolean(),
                 stateInfo[5].toBoolean()
             )
-            val tMap = stateInfo.subList(6, stateInfo.size).mapIndexed { index, s -> symbols[index] to s.toInt() }
-                .associateTo(HashMap()) { it }
+            val tMap = stateInfo.subList(6, stateInfo.size).mapIndexed { index, s ->
+                symbols[index] to s.toInt()
+            }
+                .associateTo(LinkedHashMap()) { it }
+            logger.debug("Lexical Transition: ${state.code} -> $tMap")
             stateTable.states += state
             stateTable.stateTransitions[stateTable.states.size - 1] = tMap
         }
@@ -55,6 +67,7 @@ class TableLexicalRecognizer(private val symbolTable: SymbolTable, private val c
             }
         }
         val state = stateTable.states[stateInt]
+        if (!state.isFinal) return null // Se o estado não é final o while saiu por EOF
         if (state.lookAhead) {
             pos--
             currentColumn--
@@ -72,12 +85,12 @@ class TableLexicalRecognizer(private val symbolTable: SymbolTable, private val c
     }
 
     private fun stop() {
-        print("Error")
-        exitProcess(9)
+        println("Error")
+        exitProcess(0)
     }
 
     private fun move(state: Int, character: Char): Int {
-//        print("State:${state}\t Reading: '$character'")
+        logger.debug("State:${state}\t Reading: '$character'")
         return stateTable.stateTransitions[state]!![character.toString()]
             ?: stateTable.stateTransitions[state]!!.filterKeys { k -> Regex(k).matches(character.toString()) }.values.firstOrNull()
             ?: -1

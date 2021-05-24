@@ -1,26 +1,24 @@
+import commons.SymbolTable
 import lexical.LexicalRecognizer
 import lexical.impl.TableLexicalRecognizer
-import commons.SymbolTable
+import syntatic.impl.TableSyntaxRecognizer
+import utils.getLogger
+
+class Program
+
+val logger = getLogger(Program::class.java)
 
 fun main(args: Array<String>) {
-    println("Hello World!")
     val symbolTable = SymbolTable()
     var i = 0
-    val lexicalRecognizer: LexicalRecognizer = TableLexicalRecognizer(
-        symbolTable, "" +
-                "faca(a=b)\n" +
-                "inicio\n" +
-                "print(a+b)\n" +
-                "fim\n" +
-                "int a = a * b + c\n" +
-                "float b = a/b\n" +
-                "string k= \"Avestruz de pijama\"" +
-                "se(a>b) entao print(c)senao enquanto(b > a) inicio print(b) fim"
-    )
-    do {
-        val token = lexicalRecognizer.getToken()
-        println(token)
-    } while (token != null)
+    val code = Program::class.java.getResource("/sample.code").readText(Charsets.UTF_8)
+    val lexicalRecognizer: LexicalRecognizer = TableLexicalRecognizer("/grammar.csv", symbolTable, code)
+    val syntaxRecognizer = TableSyntaxRecognizer("/tabela_sintatica.csv", "/producoes_sintatica.csv", lexicalRecognizer)
 
-    print(symbolTable)
+    logger.debug("Codigo: $code")
+    if (syntaxRecognizer.run()) {
+        println("Programa aceito")
+        println(syntaxRecognizer.retrieveTree())
+    } else
+        println("Programa Rejeitado")
 }

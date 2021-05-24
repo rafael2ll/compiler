@@ -1,0 +1,19 @@
+programa "test1"
+inicio
+    int a,b,c;
+    string k;
+    k = "Sample string";
+    a = 10;
+    b = 4;
+    c = 2;
+    faca
+        inicio
+            b = c * 2 + 1;
+        fim
+    enquanto(b < a);
+    se (a == b)
+    entao
+        inicio
+            c = a; a = 2.5;
+        fim
+fim
