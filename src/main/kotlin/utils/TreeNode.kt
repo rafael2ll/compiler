@@ -2,12 +2,16 @@ package utils
 
 class TreeNode<T>(var value: T) {
     var parent: TreeNode<T>? = null
-
+    var currentChild = 0
     var children: MutableList<TreeNode<T>> = mutableListOf()
 
     fun addChild(node: TreeNode<T>) {
         children.add(node)
         node.parent = this
+    }
+
+    fun nextChild(): TreeNode<T> {
+        return if (currentChild < children.size) children[currentChild++] else this
     }
 
     override fun toString(): String {

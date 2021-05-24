@@ -19,12 +19,13 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.12.3'
-    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.12.3'
-    implementation 'org.slf4j:slf4j-api:1.7.30'
-    implementation 'ch.qos.logback:logback-core:1.2.3'
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.12.3'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-csv', version: '2.12.3'
+    compile 'org.slf4j:slf4j-api:1.7.30'
+    compile 'ch.qos.logback:logback-core:1.2.3'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'org.jetbrains.kotlin:kotlin-test-junit'
 }
 
 
@@ -43,4 +44,18 @@ compileTestKotlin {
 
 application {
     mainClassName = 'MainKt'
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin/'
+    test.java.srcDirs += 'src/test/kotlin/'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': 'MainKt'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

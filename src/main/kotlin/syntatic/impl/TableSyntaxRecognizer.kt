@@ -5,9 +5,9 @@ import syntatic.SyntaxRecognizer
 import syntatic.model.Production
 import syntatic.model.Symbol
 import syntatic.model.Table
-import utils.CsvLoader
 import utils.TreeNode
 import utils.getLogger
+import utils.readCsvFile
 import kotlin.system.exitProcess
 
 class TableSyntaxRecognizer(
@@ -20,13 +20,15 @@ class TableSyntaxRecognizer(
     private val stack = ArrayDeque<Symbol>()
     private val table = Table()
     private val productionSet = hashMapOf<Int, Production>()
-    private val tree: TreeNode<String>;
+    private var tree: TreeNode<String>
 
     init {
         loadProductions()
         loadTable()
-        stack.addLast(productionSet[1]!!.first())
-        tree = TreeNode(productionSet[1]!!.first().head!!)
+        val initialSymbol = productionSet[1]!!.first()
+        stack.addLast(initialSymbol)
+        tree = TreeNode(initialSymbol.head!!)
+        tree.addChild(TreeNode(stack.last().value))
         table.keys.forEach {
             logger.debug("Syntax Table: $it -> ${table[it]}")
         }
@@ -34,6 +36,7 @@ class TableSyntaxRecognizer(
 
     override fun run(): Boolean {
         var proxToken = lexicalRecognizer.getToken()
+        var subTree = tree.nextChild()
         while (stack.isNotEmpty()) {
             val X = stack.last()
             logger.debug("All Stack: ${stack.map { it.value }}")
@@ -42,12 +45,14 @@ class TableSyntaxRecognizer(
                 if (X.value.uppercase() == proxToken!!.name.uppercase()) {
                     stack.removeLast()
                     proxToken = lexicalRecognizer.getToken()
+                    subTree = subTree.parent!!.nextChild()
                 } else {
                     println("${X.value} esperado!")
                     exitProcess(0)
                 }
             } else if (X.empty) {
                 stack.removeLast()
+                subTree = subTree.parent!!.nextChild()
             } else {
                 val derivation = table[X.value]?.get(proxToken?.name?.lowercase() ?: "$")
                 if (derivation == null) {
@@ -56,7 +61,13 @@ class TableSyntaxRecognizer(
                 } else {
                     // TODO: Trata Producao
                     stack.removeLast()
-                    productionSet[derivation]!!.asReversed().forEach { symbol -> stack.addLast(symbol) }
+                    productionSet[derivation]!!.asReversed().forEach { symbol ->
+                        stack.addLast(symbol)
+                    }
+                    productionSet[derivation]!!.forEach { symbol ->
+                        subTree.addChild(TreeNode(symbol.value))
+                    }
+                    subTree = subTree.nextChild()
                 }
             }
         }
@@ -69,9 +80,10 @@ class TableSyntaxRecognizer(
     }
 
     private fun loadProductions() {
-        val rows = CsvLoader().readCsvFile(productionPath) as ArrayList<ArrayList<String>>
-        val symbols = rows.removeAt(0).drop(1)
+        val rows = readCsvFile(productionPath)
+        rows.removeAt(0) // Remove header line
         rows.forEach { cols ->
+            logger.debug("Gramatica: $cols")
             val productionPos = cols.drop(0)[0].toInt()
             val values = cols[1].split("->")
             val head = values[0].trim()
@@ -85,7 +97,7 @@ class TableSyntaxRecognizer(
     }
 
     private fun loadTable() {
-        val rows = CsvLoader().readCsvFile(tablePath) as ArrayList<ArrayList<String>>
+        val rows = readCsvFile(tablePath)
         val symbols = rows.removeAt(0).drop(1)
         logger.debug("Terminals: $symbols")
         rows.forEach { cols ->

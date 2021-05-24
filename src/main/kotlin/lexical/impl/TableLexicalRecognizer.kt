@@ -5,8 +5,8 @@ import lexical.LexicalRecognizer
 import lexical.model.State
 import lexical.model.StateTable
 import lexical.model.Token
-import utils.CsvLoader
 import utils.getLogger
+import utils.readCsvFile
 import kotlin.system.exitProcess
 
 
@@ -24,26 +24,7 @@ class TableLexicalRecognizer(
 
     init {
         code += ';'
-        val rows = loadTable(tablePath) as ArrayList<ArrayList<String>>
-        val symbols = rows.removeAt(0).drop(6)
-        logger.debug("Lexical Symbols: $symbols")
-        rows.forEach { stateInfo ->
-            val state = State(
-                stateInfo[0].toInt(),
-                stateInfo[1],
-                stateInfo[2].toBoolean(),
-                stateInfo[3].toBoolean(),
-                stateInfo[4].toBoolean(),
-                stateInfo[5].toBoolean()
-            )
-            val tMap = stateInfo.subList(6, stateInfo.size).mapIndexed { index, s ->
-                symbols[index] to s.toInt()
-            }
-                .associateTo(LinkedHashMap()) { it }
-            logger.debug("Lexical Transition: ${state.code} -> $tMap")
-            stateTable.states += state
-            stateTable.stateTransitions[stateTable.states.size - 1] = tMap
-        }
+        loadTable(tablePath)
     }
 
     override fun getToken(): Token? {
@@ -100,7 +81,26 @@ class TableLexicalRecognizer(
         return stateTable.states[state].isFinal
     }
 
-    private fun loadTable(path: String): ArrayList<Any> {
-        return CsvLoader().readCsvFile(path)
+    private fun loadTable(path: String) {
+        val rows = readCsvFile(path)
+        val symbols = rows.removeAt(0).drop(6) // Drop categorias
+        logger.debug("Lexical Symbols: $symbols")
+        rows.forEach { stateInfo ->
+            val state = State(
+                stateInfo[0].toInt(),
+                stateInfo[1],
+                stateInfo[2].toBoolean(),
+                stateInfo[3].toBoolean(),
+                stateInfo[4].toBoolean(),
+                stateInfo[5].toBoolean()
+            )
+            val tMap = stateInfo.subList(6, stateInfo.size).mapIndexed { index, s ->
+                symbols[index] to s.toInt()
+            }
+                .associateTo(LinkedHashMap()) { it }
+            logger.debug("Lexical Transition: ${state.code} -> $tMap")
+            stateTable.states += state
+            stateTable.stateTransitions[stateTable.states.size - 1] = tMap
+        }
     }
 }
